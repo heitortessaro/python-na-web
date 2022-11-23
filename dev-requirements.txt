@@ -1,7 +1,6 @@
 # used during the development
+-r requirements.txt
 flake8
 black
 pytest
 uvicorn
-# also call the production libraries
--r requirements.txt
