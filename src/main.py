@@ -1,6 +1,7 @@
 from fastapi import FastAPI
-from . import model
-from .db import create_db_and_tables
+from .model import Task
+from sqlmodel import Session, select
+from .db import create_db_and_tables, engine
 
 app = FastAPI()
 
@@ -12,4 +13,20 @@ def on_startup():
 
 @app.get("/")
 async def root():
-    return {"message": "Hello HELLO"}
+    return {"message": "Hello World"}
+
+
+@app.get("/tasks/")
+async def list_tasks():
+    with Session(engine) as session:
+        tasks = session.exec(select(Task)).all()
+        return tasks
+
+
+@app.post("/tasks/")
+async def create_task(task: Task):
+    with Session(engine) as session:
+        session.add(task)
+        session.commit()
+        session.refresh(task)
+        return task
